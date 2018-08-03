@@ -13,12 +13,17 @@ RUN usermod -d /var/lib/mysql mysql
 WORKDIR $HOME
 RUN git clone https://github.com/isucon/isucon7-qualify.git isubata
 RUN git clone https://github.com/tagomoris/xbuild.git
-RUN mkdir local && xbuild/go-install -f 1.9 $HOME/local/go && go get github.com/constabulary/gb/...
+RUN mkdir local
+RUN xbuild/go-install -f 1.9 $HOME/local/go
+RUN go get github.com/constabulary/gb/...
 WORKDIR $HOME/isubata/bench
-RUN gb vendor restore && make && ./bin/gen-initial-dataset
+RUN gb vendor restore
+RUN make
+RUN ./bin/gen-initial-dataset
 RUN cp ~/isubata/files/app/nginx.* /etc/nginx/sites-available
 WORKDIR /etc/nginx/sites-enabled
-RUN unlink default && ln -s ../sites-available/nginx.conf
+RUN unlink default
+RUN ln -s ../sites-available/nginx.conf
 WORKDIR $HOME/isubata
 ADD start.sh $HOME/isubata
 CMD ./start.sh
